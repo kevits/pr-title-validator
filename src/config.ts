@@ -1,0 +1,3 @@
+type Input = {
+    letFail: boolean
+}
