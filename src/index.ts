@@ -6,7 +6,7 @@ import {
     setOutput
 } from "@actions/core"
 import * as github from "@actions/github"
-import { validateHeader } from "./process"
+import { validateHeader } from "@kevits/conventional-commit"
 import { graphql, GraphQlQueryResponseData }  from "@octokit/graphql"
 
 

@@ -1,0 +1,5 @@
+{
+    "displayName": "PR Tiltle Validator Tests",
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+}
