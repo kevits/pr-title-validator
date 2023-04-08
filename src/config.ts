@@ -50,6 +50,6 @@ export function getWorkflowInput(): WorkflowInput {
         validTypes: parseStringArrayProperty("valid-types"),
         validScopes: parseStringArrayProperty("valid-scopes"),
         maxLenght: parseNumberProperty("max-length"),
-        regex: parseRegexProperty("regex")
+        regex: parseRegexProperty("regex"),
     }
 }
