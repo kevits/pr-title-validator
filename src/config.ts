@@ -1,6 +1,6 @@
 import { getInput, warning } from "@actions/core"
 
-type WorkflowInput = {
+export type WorkflowInput = {
     letFail: boolean
     skipPrefix: string | null
     validTypes: string[] | null

@@ -1,7 +1,8 @@
-import { error, getInput, info, setFailed, setOutput } from "@actions/core"
+import { error, info, setFailed, setOutput } from "@actions/core"
 import * as github from "@actions/github"
 import { validateHeader } from "@kevits/conventional-commit"
 import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
+import { WorkflowInput, getWorkflowInput } from "./config"
 
 function getPrNumber(): string | null {
     let ref: string | undefined = process.env.GITHUB_REF
@@ -26,12 +27,32 @@ function checkPrTitle(title: string): boolean {
     return false
 }
 
-async function run() {
+async function getPrTitle(): Promise<string> {
+    const prNumber: string | null = getPrNumber()
+    if (prNumber == null) {
+        setFailed("Pull request number was not found")
+    }
+
     const graphqlWithAuth = graphql.defaults({
         headers: {
             authorization: `token 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`,
         },
     })
+
+    const response: GraphQlQueryResponseData = await graphqlWithAuth(`
+    {
+        repository(name: "${github.context.repo.repo}", owner: "${github.context.repo.owner}") {
+            pullRequest(number: ${prNumber}) {
+                title
+            }
+        }
+    }
+    `)
+    return String(response.repository.pullRequest.title)
+}
+
+async function run() {
+    const workflowInput: WorkflowInput = getWorkflowInput()
 
     info(`eventName: ${github.context.eventName}`)
     info(`Owner: ${github.context.repo.owner}`)
@@ -39,23 +60,9 @@ async function run() {
     info(`GITHUB_REF: ${process.env.GITHUB_REF}`)
     info(`GITHUB_EVENT_PATH: ${process.env.GITHUB_EVENT_PATH}`)
 
-    const prNumber: string | null = getPrNumber()
-    if (prNumber == null) {
-        throw new Error("Pull request number was not found")
-    }
+    const prTitle: string = await getPrTitle()
 
-    const response: GraphQlQueryResponseData = await graphqlWithAuth(`
-        {
-            repository(name: "${github.context.repo.repo}", owner: "${github.context.repo.owner}") {
-                pullRequest(number: ${prNumber}) {
-                    title
-                }
-            }
-        }
-    `)
-
-    const prTitle: string = response.repository.pullRequest.title
-    info(`PR title: ${response.repository.pullRequest.title}`)
+    info(`PR title: ${prTitle}`)
     let isValid: boolean = validateHeader(prTitle)
     setOutput("is-valid", isValid)
 }
