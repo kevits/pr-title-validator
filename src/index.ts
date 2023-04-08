@@ -1,14 +1,7 @@
-import {
-    error,
-    getInput,
-    info,
-    setFailed,
-    setOutput
-} from "@actions/core"
+import { error, getInput, info, setFailed, setOutput } from "@actions/core"
 import * as github from "@actions/github"
 import { validateHeader } from "@kevits/conventional-commit"
-import { graphql, GraphQlQueryResponseData }  from "@octokit/graphql"
-
+import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
 
 function getPrNumber(): string | null {
     let ref: string | undefined = process.env.GITHUB_REF
@@ -34,14 +27,12 @@ function checkPrTitle(title: string): boolean {
 }
 
 async function run() {
-
     const graphqlWithAuth = graphql.defaults({
         headers: {
             authorization: `token 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`,
         },
-    });
+    })
 
-    
     info(`eventName: ${github.context.eventName}`)
     info(`Owner: ${github.context.repo.owner}`)
     info(`Repo: ${github.context.repo.repo}`)
@@ -50,7 +41,7 @@ async function run() {
 
     const prNumber: string | null = getPrNumber()
     if (prNumber == null) {
-        throw new Error("Pull request number was not found");
+        throw new Error("Pull request number was not found")
     }
 
     const response: GraphQlQueryResponseData = await graphqlWithAuth(`
@@ -69,9 +60,9 @@ async function run() {
     setOutput("is-valid", isValid)
 }
 
-run().catch(err => {
-    const e: Error = err;
+run().catch((err) => {
+    const e: Error = err
     console.log(e)
-    error(e);
-    setFailed(e.message);
-});
+    error(e)
+    setFailed(e.message)
+})

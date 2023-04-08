@@ -1,0 +1,10 @@
+tabWidth: 4
+semi: false
+printWidth: 120
+overrides:
+  - files: "*.yaml"
+    options:
+      tabWidth: 2
+  - files: "*.md"
+    options:
+      tabWidth: 2

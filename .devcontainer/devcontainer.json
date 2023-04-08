@@ -1,6 +1,6 @@
 {
-	"name": "Node.js & TypeScript",
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-16",
-	"postCreateCommand": "npm install",
-	"runArgs": ["--name", "action-pr-title-validator"]
+    "name": "Node.js & TypeScript",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:0-16",
+    "postCreateCommand": "npm install",
+    "runArgs": ["--name", "action-pr-title-validator"]
 }
