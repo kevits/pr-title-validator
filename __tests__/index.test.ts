@@ -9,7 +9,7 @@ describe("Check helper functions", () => {
             validTypes: null,
             validScopes: null,
             maxLenght: null,
-            regex: null
+            regex: null,
         }
         const skip: boolean = checkSkipPrefix("[WIP] foo", config)
         expect(skip).toBeTruthy()

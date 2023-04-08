@@ -42,7 +42,6 @@ async function getPrTitle(): Promise<string> {
     return String(response.repository.pullRequest.title)
 }
 
-
 export function checkSkipPrefix(title: string, config: WorkflowInput): boolean {
     if (config.skipPrefix != null) {
         return title.startsWith(config.skipPrefix)
