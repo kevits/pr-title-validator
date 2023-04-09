@@ -107,6 +107,13 @@ async function run() {
 
     const prTitle: string = await getPrTitle()
 
+    // Checking conditions in the following order:#
+    // 1. skip prefix
+    // 2. max length
+    // 3. valid types
+    // 4. valid scopes
+
+
     info(`PR title: ${prTitle}`)
     let isValid: boolean = validateHeader(prTitle)
     setOutput("is-valid", isValid)
