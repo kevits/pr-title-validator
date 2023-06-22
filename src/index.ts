@@ -134,7 +134,10 @@ async function run() {
         error(`Length exceeds ${workflowInput.maxLength} characters`)
     }
 
-    let typeValid: boolean = checkType(commitHeader as CommitHeader, workflowInput)
+    let typeValid: boolean = false
+    if (commitHeader != null) {
+        typeValid = checkType(commitHeader, workflowInput)
+    }
     if (workflowInput.validTypes == null) {
         info("Skip check: No types are defined")
     } else if (typeValid) {
@@ -142,7 +145,6 @@ async function run() {
     } else {
         error(`The type ${commitHeader?.type} is not valid`)
     }
-
 
     let checksPassed : boolean = isValid && lengthValid && typeValid
     setOutput("is-valid", checksPassed)
