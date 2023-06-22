@@ -1,4 +1,4 @@
-import { error, info, setFailed, setOutput } from "@actions/core"
+import { error, info, setFailed, setOutput, getInput } from "@actions/core"
 import * as github from "@actions/github"
 import { CommitHeader, validateHeader } from "@kevits/conventional-commit"
 import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
@@ -26,7 +26,8 @@ async function getPrTitle(): Promise<string> {
 
     const graphqlWithAuth = graphql.defaults({
         headers: {
-            authorization: `token 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`,
+            //authorization: `token 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`,
+            authorization: `token ${getInput("token")}`
         },
     })
 

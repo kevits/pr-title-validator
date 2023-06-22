@@ -1,6 +1,9 @@
 name: "PR Title Validator"
 description: "Ensure that the PR title follows the Conventional Commits specification"
 inputs:
+  token:
+    description: "Token for GitHub API authentication"
+    required: true
   let-fail:
     description: "Determines if the workflow will fail, otherwise it will just output a boolean (default: true)"
     default: "true"
