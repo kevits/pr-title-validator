@@ -115,9 +115,14 @@ async function run() {
     // 4. valid scopes
 
 
-    info(`PR title: ${prTitle}`)
+    info(`Checking PR title: ${prTitle}`)
+
     let isValid: boolean = validateHeader(prTitle)
     setOutput("is-valid", isValid)
+
+    if (!isValid) {
+        setFailed(`The PR title is not valid`)
+    }
 }
 
 run().catch((err) => {
