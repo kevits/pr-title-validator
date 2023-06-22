@@ -1,6 +1,5 @@
 import { WorkflowInput } from "../src/config"
 import { checkMaxLength, checkSkipPrefix } from "../src/index"
-//import { structuredClone } from "@types/node"
 
 const configTemplate: WorkflowInput = {
     letFail: true,
@@ -14,14 +13,9 @@ const configTemplate: WorkflowInput = {
 
 describe("Check helper functions", () => {
     test("Test inputs", () => {
-        const config: WorkflowInput = {
-            letFail: true,
-            skipPrefix: "[WIP] ",
-            validTypes: null,
-            validScopes: null,
-            maxLength: null,
-            regex: null,
-        }
+        const config = Object.assign({}, configTemplate);
+        
+        config.skipPrefix = "[WIP] "
         const skip: boolean = checkSkipPrefix("[WIP] foo", config)
         expect(skip).toBeTruthy()
     })

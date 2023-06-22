@@ -1,6 +1,6 @@
 import { error, info, setFailed, setOutput, getInput } from "@actions/core"
 import * as github from "@actions/github"
-import { CommitHeader, validateHeader } from "@kevits/conventional-commit"
+import { Commit, CommitHeader, validateHeader, parseHeader } from "@kevits/conventional-commit"
 import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
 import { WorkflowInput, getWorkflowInput } from "./config"
 import { config } from "process"
@@ -109,31 +109,42 @@ async function run() {
 
     const prTitle: string = await getPrTitle()
 
-    // Checking conditions in the following order:#
-    // 1. skip prefix
-    // 2. max length
-    // 3. valid types
-    // 4. valid scopes
-
-
+    // The conditions are checked in the following order:
+    // 1. Check if the validation will be skipped
+    // 2. Valid conventional commit
+    // 3. Check character length
+    // 4. Check type
+    // 5. Check scope
     info(`Checking PR title: ${prTitle}`)
 
     let isValid: boolean = validateHeader(prTitle)
-    if (!isValid) {
-        error("Title is not a valid conventional commit")
-    } else {
+    let commitHeader: CommitHeader | null = parseHeader(prTitle)
+    if (isValid && commitHeader != null) {
         info("Title is a valid conventional commit")
+    } else {
+        error("Title is not a valid conventional commit")
     }
-
 
     let lengthValid: boolean = checkMaxLength(prTitle, workflowInput)
-    if (!lengthValid) {
-        error(`Length exceeds ${workflowInput.maxLength} characters`)
-    } else {
+    if (workflowInput.maxLength == null) {
+        info(`Skip check: Defined length ist null`)
+    } else if (lengthValid) {
         info(`Length within ${workflowInput.maxLength} characters`)
+    } else {
+        error(`Length exceeds ${workflowInput.maxLength} characters`)
     }
 
-    let checksPassed : boolean = isValid && lengthValid
+    let typeValid: boolean = checkType(commitHeader as CommitHeader, workflowInput)
+    if (workflowInput.validTypes == null) {
+        info("Skip check: No types are defined")
+    } else if (typeValid) {
+        info(`The type ${commitHeader?.type} is valid`)
+    } else {
+        error(`The type ${commitHeader?.type} is not valid`)
+    }
+
+
+    let checksPassed : boolean = isValid && lengthValid && typeValid
     setOutput("is-valid", checksPassed)
     if (!checksPassed) {
         setFailed(`The PR title is not valid`)
