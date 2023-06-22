@@ -115,7 +115,7 @@ async function run() {
     // 3. Check character length
     // 4. Check type
     // 5. Check scope
-    info(`Checking PR title: ${prTitle}`)
+    info(`Checking PR title: "${prTitle}"`)
 
     let isValid: boolean = validateHeader(prTitle)
     let commitHeader: CommitHeader | null = parseHeader(prTitle)
@@ -135,18 +135,30 @@ async function run() {
     }
 
     let typeValid: boolean = false
-    if (commitHeader != null) {
-        typeValid = checkType(commitHeader, workflowInput)
-    }
     if (workflowInput.validTypes == null) {
         info("Skip check: No types are defined")
-    } else if (typeValid) {
-        info(`The type ${commitHeader?.type} is valid`)
-    } else {
-        error(`The type ${commitHeader?.type} is not valid`)
+    } else if (commitHeader != null) {
+        typeValid = checkType(commitHeader, workflowInput)
+        if (typeValid) {
+            info(`The type '${commitHeader.type}' is valid`)
+        } else {
+            error(`The type '${commitHeader.type}' is not valid`)
+        }
     }
 
-    let checksPassed : boolean = isValid && lengthValid && typeValid
+    let scopeValid: boolean = false
+    if (workflowInput.validScopes == null) {
+        info("Skip check: No scopes are defined")
+    } else if (commitHeader != null) {
+        scopeValid = checkScope(commitHeader, workflowInput)
+        if (scopeValid) {
+            info(`The scope '${commitHeader.scope}' is valid`)
+        } else {
+            error(`The scope '${commitHeader.scope}' is not valid`)
+        }
+    }
+
+    let checksPassed : boolean = isValid && lengthValid && typeValid && scopeValid
     setOutput("is-valid", checksPassed)
     if (!checksPassed) {
         setFailed(`The PR title is not valid`)
