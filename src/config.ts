@@ -5,7 +5,7 @@ export type WorkflowInput = {
     skipPrefix: string | null
     validTypes: string[] | null
     validScopes: string[] | null
-    maxLenght: number | null
+    maxLength: number | null
     regex: RegExp | null
 }
 
@@ -49,7 +49,7 @@ export function getWorkflowInput(): WorkflowInput {
         skipPrefix: parseStringProperty("skip-prefix"),
         validTypes: parseStringArrayProperty("valid-types"),
         validScopes: parseStringArrayProperty("valid-scopes"),
-        maxLenght: parseNumberProperty("max-length"),
+        maxLength: parseNumberProperty("max-length"),
         regex: parseRegexProperty("regex"),
     }
 }

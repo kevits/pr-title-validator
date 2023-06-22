@@ -3,6 +3,7 @@ import * as github from "@actions/github"
 import { CommitHeader, validateHeader } from "@kevits/conventional-commit"
 import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
 import { WorkflowInput, getWorkflowInput } from "./config"
+import { config } from "process"
 
 function getPrNumber(): string | null {
     let ref: string | undefined = process.env.GITHUB_REF
@@ -75,8 +76,8 @@ export function checkScope(title: CommitHeader, config: WorkflowInput): boolean 
 }
 
 export function checkMaxLength(title: string, config: WorkflowInput): boolean {
-    if (config.maxLenght != null) {
-        return title.length <= config.maxLenght
+    if (config.maxLength != null) {
+        return title.length <= config.maxLength
     }
     return true
 }
@@ -118,9 +119,23 @@ async function run() {
     info(`Checking PR title: ${prTitle}`)
 
     let isValid: boolean = validateHeader(prTitle)
-    setOutput("is-valid", isValid)
-
     if (!isValid) {
+        error("Title is not a valid conventional commit")
+    } else {
+        info("Title is a valid conventional commit")
+    }
+
+
+    let lengthValid: boolean = checkMaxLength(prTitle, workflowInput)
+    if (!lengthValid) {
+        error(`Length exceeds ${workflowInput.maxLength} characters`)
+    } else {
+        info(`Length within ${workflowInput.maxLength} characters`)
+    }
+
+    let checksPassed : boolean = isValid && lengthValid
+    setOutput("is-valid", checksPassed)
+    if (!checksPassed) {
         setFailed(`The PR title is not valid`)
     }
 }
