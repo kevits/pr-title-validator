@@ -127,7 +127,7 @@ async function run() {
 
     let lengthValid: boolean = checkMaxLength(prTitle, workflowInput)
     if (workflowInput.maxLength == null) {
-        info(`Skip check: Defined length ist null`)
+        info(`Skip: Defined length is null`)
     } else if (lengthValid) {
         info(`Length within ${workflowInput.maxLength} characters`)
     } else {
@@ -136,7 +136,7 @@ async function run() {
 
     let typeValid: boolean = false
     if (workflowInput.validTypes == null) {
-        info("Skip check: No types are defined")
+        info("Skip: No types are defined")
     } else if (commitHeader != null) {
         typeValid = checkType(commitHeader, workflowInput)
         if (typeValid) {
@@ -148,7 +148,7 @@ async function run() {
 
     let scopeValid: boolean = false
     if (workflowInput.validScopes == null) {
-        info("Skip check: No scopes are defined")
+        info("Skip: No scopes are defined")
     } else if (commitHeader != null) {
         scopeValid = checkScope(commitHeader, workflowInput)
         if (scopeValid) {
