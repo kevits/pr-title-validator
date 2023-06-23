@@ -27,8 +27,7 @@ async function getPrTitle(): Promise<string> {
 
     const graphqlWithAuth = graphql.defaults({
         headers: {
-            //authorization: `token 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`,
-            authorization: `token ${getInput("token")}`
+            authorization: `token ${getInput("token")}`,
         },
     })
 
@@ -43,15 +42,6 @@ async function getPrTitle(): Promise<string> {
     `)
     return String(response.repository.pullRequest.title)
 }
-
-// function checkPrTitle(title: string): boolean {
-//     info(`Event name: ${github.context.eventName}`)
-//     if (github.context.eventName == "pull_request" && github.context.payload.pull_request != undefined) {
-//         info(`The PR title is: ${title}`)
-//         return validateHeader(title)
-//     }
-//     return false
-// }
 
 async function run() {
     const workflowInput: WorkflowInput = getWorkflowInput()
@@ -113,7 +103,7 @@ async function run() {
         }
     }
 
-    let checksPassed : boolean = isValid && lengthValid && typeValid && scopeValid
+    let checksPassed: boolean = isValid && lengthValid && typeValid && scopeValid
     setOutput("is-valid", checksPassed)
     if (!checksPassed) {
         setFailed(`The PR title is not valid`)

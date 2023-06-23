@@ -3,7 +3,7 @@ import { getPrNumber } from "../src/index"
 describe("Test PR number parsing", () => {
     test("Parse valid string", () => {
         process.env = {
-            GITHUB_REF: "refs/pull/123/merge"
+            GITHUB_REF: "refs/pull/123/merge",
         }
         let prNumber: string | null = getPrNumber()
         expect(prNumber).toBe("123")
@@ -11,7 +11,7 @@ describe("Test PR number parsing", () => {
 
     test("Parse invalid string", () => {
         process.env = {
-            GITHUB_REF: "pull/123/merge"
+            GITHUB_REF: "pull/123/merge",
         }
         let prNumber: string | null = getPrNumber()
         expect(prNumber).toBeNull()
@@ -19,7 +19,7 @@ describe("Test PR number parsing", () => {
 
     test("Empty environment variable", () => {
         process.env = {
-            GITHUB_REF: ""
+            GITHUB_REF: "",
         }
         let prNumber: string | null = getPrNumber()
         expect(prNumber).toBeNull()

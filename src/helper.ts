@@ -63,8 +63,6 @@ export function checkScope(title: CommitHeader, config: WorkflowInput): boolean 
     return true
 }
 
-
-
 export function checkRegex(title: string, config: WorkflowInput): boolean {
     if (config.regex != null) {
         // TODO: implement
