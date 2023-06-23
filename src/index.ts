@@ -7,16 +7,13 @@ import { checkMaxLength, checkType, checkScope } from "./helper"
 
 export function getPrNumber(): string | null {
     let ref: string | undefined = process.env.GITHUB_REF
-    if (ref == undefined) {
-        return null
+    if (ref) {
+        const match: RegExpMatchArray | null = ref.trim().match(/refs\/pull\/(?<number>\d+)\/merge/)
+        if (match && match.groups) {
+            return match.groups["number"]
+        }
     }
-
-    const match: RegExpMatchArray | null = ref.trim().match(/refs\/pull\/(?<number>\d+)\/merge/)
-    if (match == null || match.groups == undefined) {
-        return null
-    }
-
-    return match.groups["number"]
+    return null
 }
 
 export async function getPrTitle(): Promise<string> {
@@ -70,7 +67,7 @@ async function run() {
         error("Title is not a valid conventional commit")
     }
 
-    let lengthValid: boolean = checkMaxLength(prTitle, workflowInput)
+    let lengthValid: boolean | undefined = checkMaxLength(prTitle, workflowInput)
     if (workflowInput.maxLength == null) {
         info(`Skip: Defined length is null`)
     } else if (lengthValid) {
@@ -79,31 +76,36 @@ async function run() {
         error(`Length exceeds ${workflowInput.maxLength} characters`)
     }
 
-    let typeValid: boolean = false
-    if (workflowInput.validTypes == null) {
-        info("Skip: No types are defined")
-    } else if (commitHeader != null) {
+    let typeValid: boolean | undefined
+    if (workflowInput.validTypes && commitHeader) {
         typeValid = checkType(commitHeader, workflowInput)
         if (typeValid) {
             info(`The type '${commitHeader.type}' is valid`)
         } else {
             error(`The type '${commitHeader.type}' is not valid`)
         }
+    } else {
+        info("Skip: No types are defined")
     }
 
-    let scopeValid: boolean = false
-    if (workflowInput.validScopes == null) {
-        info("Skip: No scopes are defined")
-    } else if (commitHeader != null) {
+    let scopeValid: boolean | undefined
+    if (workflowInput.validScopes && commitHeader) {
         scopeValid = checkScope(commitHeader, workflowInput)
         if (scopeValid) {
             info(`The scope '${commitHeader.scope}' is valid`)
         } else {
             error(`The scope '${commitHeader.scope}' is not valid`)
         }
+    } else {
+        info("Skip: No scopes are defined")
     }
 
-    let checksPassed: boolean = isValid && lengthValid && typeValid && scopeValid
+    let checksPassed: boolean =
+        isValid &&
+        (lengthValid == undefined ? true : lengthValid) &&
+        (typeValid == undefined ? true : typeValid) &&
+        (scopeValid == undefined ? true : scopeValid)
+
     setOutput("is-valid", checksPassed)
     if (!checksPassed) {
         setFailed(`The PR title is not valid`)

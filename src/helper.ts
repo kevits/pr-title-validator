@@ -7,11 +7,11 @@ import { WorkflowInput } from "./config"
  * @param config input config from the workflow
  * @returns `true` if validation should skipped, otherweise `false`
  */
-export function checkSkipPrefix(title: string, config: WorkflowInput): boolean {
+export function checkSkipPrefix(title: string, config: WorkflowInput): boolean | undefined {
     if (config.skipPrefix) {
         return title.startsWith(config.skipPrefix)
     }
-    return false
+    return
 }
 
 /**
@@ -20,11 +20,11 @@ export function checkSkipPrefix(title: string, config: WorkflowInput): boolean {
  * @param config input config from the workflow
  * @returns `true` if length is within the defined range, otherwise `false`
  */
-export function checkMaxLength(title: string, config: WorkflowInput): boolean {
+export function checkMaxLength(title: string, config: WorkflowInput): boolean | undefined {
     if (config.maxLength) {
         return title.length <= config.maxLength
     }
-    return true
+    return
 }
 
 /**
@@ -33,7 +33,7 @@ export function checkMaxLength(title: string, config: WorkflowInput): boolean {
  * @param config input config from the workflow
  * @returns `true` if type is valid, otherwise `false`
  */
-export function checkType(title: CommitHeader, config: WorkflowInput): boolean {
+export function checkType(title: CommitHeader, config: WorkflowInput): boolean | undefined {
     if (config.validTypes && config.validTypes.length) {
         for (let type of config.validTypes) {
             if (title.type == type) {
@@ -42,7 +42,7 @@ export function checkType(title: CommitHeader, config: WorkflowInput): boolean {
         }
         return false
     }
-    return true
+    return
 }
 
 /**
@@ -51,7 +51,7 @@ export function checkType(title: CommitHeader, config: WorkflowInput): boolean {
  * @param config input conig from the workflow
  * @returns `true` if scope is valid, otherwise `false`
  */
-export function checkScope(title: CommitHeader, config: WorkflowInput): boolean {
+export function checkScope(title: CommitHeader, config: WorkflowInput): boolean | undefined {
     if (config.validScopes && config.validScopes.length) {
         for (let scope of config.validScopes) {
             if (title.scope == scope) {
@@ -60,12 +60,18 @@ export function checkScope(title: CommitHeader, config: WorkflowInput): boolean 
         }
         return false
     }
-    return true
+    return
 }
 
-export function checkRegex(title: string, config: WorkflowInput): boolean {
-    if (config.regex != null) {
-        // TODO: implement
+/**
+ * Checks if the string with the given pattern is valid.
+ * @param title pull request title
+ * @param config input config from the workflow
+ * @returns `true` if the string matches the regex pattern, otherwise `false`
+ */
+export function checkRegex(title: string, config: WorkflowInput): boolean | undefined {
+    if (config.regex) {
+        return config.regex.test(title)
     }
-    return true
+    return
 }

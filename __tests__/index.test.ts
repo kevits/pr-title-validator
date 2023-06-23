@@ -5,7 +5,7 @@ describe("Test PR number parsing", () => {
         process.env = {
             GITHUB_REF: "refs/pull/123/merge",
         }
-        let prNumber: string | null = getPrNumber()
+        let prNumber = getPrNumber()
         expect(prNumber).toBe("123")
     })
 
@@ -13,7 +13,7 @@ describe("Test PR number parsing", () => {
         process.env = {
             GITHUB_REF: "pull/123/merge",
         }
-        let prNumber: string | null = getPrNumber()
+        let prNumber = getPrNumber()
         expect(prNumber).toBeNull()
     })
 
@@ -21,12 +21,12 @@ describe("Test PR number parsing", () => {
         process.env = {
             GITHUB_REF: "",
         }
-        let prNumber: string | null = getPrNumber()
+        let prNumber = getPrNumber()
         expect(prNumber).toBeNull()
     })
 
     test("No environment variable", () => {
-        let prNumber: string | null = getPrNumber()
+        let prNumber = getPrNumber()
         expect(prNumber).toBeNull()
     })
 })

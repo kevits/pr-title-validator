@@ -2,44 +2,44 @@ import { getInput, warning } from "@actions/core"
 
 export type WorkflowInput = {
     letFail: boolean
-    skipPrefix: string | null
-    validTypes: string[] | null
-    validScopes: string[] | null
-    maxLength: number | null
-    regex: RegExp | null
+    skipPrefix?: string
+    validTypes?: string[]
+    validScopes?: string[]
+    maxLength?: number
+    regex?: RegExp
 }
 
-function parseStringProperty(name: string): string | null {
-    return getInput(name) || null
+export function parseStringProperty(name: string): string | undefined {
+    return getInput(name) || undefined
 }
 
-function parseNumberProperty(name: string): number | null {
-    let inputStr: string | null = getInput(name) || null
-    let inputNum: number | null = Number(inputStr)
-    if (Number.isNaN(inputNum) || inputNum <= 0) {
-        inputNum = null
+export function parseNumberProperty(name: string): number | undefined {
+    let inputStr: string | undefined = getInput(name) || undefined
+    let inputNum: number | undefined = Number(inputStr)
+    if (Number.isInteger(inputNum) && inputNum > 0) {
+        return inputNum
     }
-    return inputNum
+    return
 }
 
-function parseStringArrayProperty(name: string): string[] | null {
+function parseStringArrayProperty(name: string): string[] | undefined {
     let inputStr: string | null = getInput(name) || null
     if (inputStr != null) {
         return inputStr.split(",")
     }
-    return null
+    return
 }
 
-function parseRegexProperty(name: string): RegExp | null {
+function parseRegexProperty(name: string): RegExp | undefined {
     try {
         let inputStr: string | null = getInput(name) || null
         if (inputStr != null) {
             return RegExp(inputStr)
         }
-        return null
+        return
     } catch (e) {
         warning(`Could not parse regex expression, falling back to default.\n${e}`)
-        return null
+        return
     }
 }
 

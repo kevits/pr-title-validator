@@ -20,7 +20,7 @@ inputs:
     description: "Define a maximmal title length"
     default: null
   regex:
-    description: "Regex pattern that defines a valid PR title (empty=default)"
+    description: "Custom regex pattern that defines a valid PR title (empty=default)"
     default: null
 outputs:
   is-valid:
