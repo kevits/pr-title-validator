@@ -4,9 +4,8 @@ import { CommitHeader, validateHeader, parseHeader } from "@kevits/conventional-
 import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
 import { WorkflowInput, getWorkflowInput } from "./config"
 import { checkMaxLength, checkType, checkScope } from "./helper"
-import { config } from "process"
 
-function getPrNumber(): string | null {
+export function getPrNumber(): string | null {
     let ref: string | undefined = process.env.GITHUB_REF
     if (ref == undefined) {
         return null
