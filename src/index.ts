@@ -1,8 +1,9 @@
 import { error, info, setFailed, setOutput, getInput } from "@actions/core"
 import * as github from "@actions/github"
-import { Commit, CommitHeader, validateHeader, parseHeader } from "@kevits/conventional-commit"
+import { CommitHeader, validateHeader, parseHeader } from "@kevits/conventional-commit"
 import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
 import { WorkflowInput, getWorkflowInput } from "./config"
+import { checkMaxLength, checkType, checkScope } from "./helper"
 import { config } from "process"
 
 function getPrNumber(): string | null {
@@ -44,59 +45,14 @@ async function getPrTitle(): Promise<string> {
     return String(response.repository.pullRequest.title)
 }
 
-export function checkSkipPrefix(title: string, config: WorkflowInput): boolean {
-    if (config.skipPrefix != null) {
-        return title.startsWith(config.skipPrefix)
-    }
-    return true
-}
-
-export function checkType(title: CommitHeader, config: WorkflowInput): boolean {
-    if (config.validTypes != null) {
-        for (let type of config.validTypes) {
-            if (title.type == type) {
-                return true
-            }
-        }
-        return false
-    }
-    return true
-}
-
-export function checkScope(title: CommitHeader, config: WorkflowInput): boolean {
-    if (config.validScopes != null) {
-        for (let scope of config.validScopes) {
-            if (title.scope == scope) {
-                return true
-            }
-        }
-        return false
-    }
-    return true
-}
-
-export function checkMaxLength(title: string, config: WorkflowInput): boolean {
-    if (config.maxLength != null) {
-        return title.length <= config.maxLength
-    }
-    return true
-}
-
-export function checkRegex(title: string, config: WorkflowInput): boolean {
-    if (config.regex != null) {
-        // TODO: implement
-    }
-    return true
-}
-
-function checkPrTitle(title: string): boolean {
-    info(`Event name: ${github.context.eventName}`)
-    if (github.context.eventName == "pull_request" && github.context.payload.pull_request != undefined) {
-        info(`The PR title is: ${title}`)
-        return validateHeader(title)
-    }
-    return false
-}
+// function checkPrTitle(title: string): boolean {
+//     info(`Event name: ${github.context.eventName}`)
+//     if (github.context.eventName == "pull_request" && github.context.payload.pull_request != undefined) {
+//         info(`The PR title is: ${title}`)
+//         return validateHeader(title)
+//     }
+//     return false
+// }
 
 async function run() {
     const workflowInput: WorkflowInput = getWorkflowInput()

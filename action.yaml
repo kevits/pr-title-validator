@@ -6,7 +6,7 @@ inputs:
     required: true
   let-fail:
     description: "Determines if the workflow will fail, otherwise it will just output a boolean (default: true)"
-    default: "true"
+    default: true
   skip-prefix:
     description: "Prefix that will skip the validation (default: [WIP]<space>)"
     default: "[WIP] "
@@ -15,13 +15,13 @@ inputs:
     default: "feat,fix,build,chore,ci,docs,style,refactor,perf,test"
   valid-scopes:
     description: "List of valid conventional commit scopes (default: empty)"
-    default: ""
+    default: null
   max-length:
     description: "Define a maximmal title length"
-    default: ""
+    default: null
   regex:
     description: "Regex pattern that defines a valid PR title (empty=default)"
-    default: ""
+    default: null
 outputs:
   is-valid:
     description: "Indicates if the PR title is a valid conventional commit"
