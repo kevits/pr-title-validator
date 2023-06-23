@@ -19,8 +19,8 @@ export function getPrNumber(): string | null {
     return match.groups["number"]
 }
 
-async function getPrTitle(): Promise<string> {
-    const prNumber: string | null = getPrNumber()
+export async function getPrTitle(): Promise<string> {
+    const prNumber: string | null = exports.getPrNumber()
     if (prNumber == null) {
         setFailed("Pull request number was not found")
     }

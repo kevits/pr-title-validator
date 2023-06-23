@@ -1,4 +1,4 @@
-import { getPrNumber } from "../src/index"
+import { getPrNumber, getPrTitle } from "../src/index"
 
 describe("Test PR number parsing", () => {
     test("Parse valid string", () => {
@@ -32,15 +32,24 @@ describe("Test PR number parsing", () => {
 })
 
 describe("Test getting PR title", () => {
-    test("API call successful", () => {
+    // TODO: mock GitHub GraphQL API call
+
+    test.skip("API call successful", async () => {
+        const indexModule = require("../src/index")
+        jest.spyOn(indexModule, "getPrNumber").mockReturnValueOnce("123")
         // mock request call
+        const prTitle: string = await getPrTitle()
     })
 
-    test("API call not successful", () => {
+    test.skip("API call not successful", async () => {
+        const indexModule = require("../src/index")
+        jest.spyOn(indexModule, "getPrNumber").mockReturnValueOnce("123")
         // mock request call
+        const prTitle: string = await getPrTitle()
     })
 
-    test("No PR number", () => {
-        // mock method call (getPrNumber)
+    test.skip("No PR number", async () => {
+        // check if setFailed is called
+        const prTitle: string = await getPrTitle()
     })
 })
