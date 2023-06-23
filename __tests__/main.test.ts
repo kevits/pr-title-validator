@@ -1,4 +1,20 @@
-import { getPrNumber, getPrTitle } from "../src/index"
+import * as core from "@actions/core"
+import * as github from "@actions/github"
+
+import { getPrNumber, getPrTitle } from "../src/main"
+
+beforeAll(() => {
+    jest.spyOn(core, "setFailed").mockImplementation(() => {
+        throw new Error("process.exit: 1")
+    })
+
+    jest.spyOn(github.context, "repo", "get").mockImplementation(() => {
+        return {
+            owner: "some-owner",
+            repo: "some-repo",
+        }
+    })
+})
 
 describe("Test PR number parsing", () => {
     test("Parse valid string", () => {
@@ -33,7 +49,6 @@ describe("Test PR number parsing", () => {
 
 describe("Test getting PR title", () => {
     // TODO: mock GitHub GraphQL API call
-
     test.skip("API call successful", async () => {
         const indexModule = require("../src/index")
         jest.spyOn(indexModule, "getPrNumber").mockReturnValueOnce("123")
@@ -48,8 +63,8 @@ describe("Test getting PR title", () => {
         const prTitle: string = await getPrTitle()
     })
 
-    test.skip("No PR number", async () => {
-        // check if setFailed is called
-        const prTitle: string = await getPrTitle()
+    test("No PR number", async () => {
+        await expect(getPrTitle()).rejects.toThrow("process.exit: 1")
+        expect(core.setFailed).toHaveBeenCalledTimes(1)
     })
 })

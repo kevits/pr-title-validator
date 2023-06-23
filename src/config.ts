@@ -22,25 +22,24 @@ export function parseNumberProperty(name: string): number | undefined {
     return
 }
 
-function parseStringArrayProperty(name: string): string[] | undefined {
-    let inputStr: string | null = getInput(name) || null
-    if (inputStr != null) {
+export function parseStringArrayProperty(name: string): string[] | undefined {
+    let inputStr: string = getInput(name)
+    if (inputStr) {
         return inputStr.split(",")
     }
     return
 }
 
-function parseRegexProperty(name: string): RegExp | undefined {
+export function parseRegexProperty(name: string): RegExp | undefined {
     try {
-        let inputStr: string | null = getInput(name) || null
-        if (inputStr != null) {
+        let inputStr: string = getInput(name)
+        if (inputStr) {
             return RegExp(inputStr)
         }
-        return
     } catch (e) {
         warning(`Could not parse regex expression, falling back to default.\n${e}`)
-        return
     }
+    return
 }
 
 export function getWorkflowInput(): WorkflowInput {
