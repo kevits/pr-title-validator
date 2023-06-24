@@ -73,7 +73,7 @@ export async function run() {
     let commitHeader: CommitHeader | null = parseHeader(prTitle)
     if (isValid && commitHeader != null) {
         info("Title is a valid conventional commit")
-    } else {
+    } else if (!skipValidation) {
         error("Title is not a valid conventional commit")
     }
 
