@@ -40,15 +40,7 @@ export async function getPrTitle(): Promise<string> {
     return String(response.repository.pullRequest.title)
 }
 
-export async function run() {
-    let eventName: string = github.context.eventName
-    if (eventName != "pull_request") {
-        setFailed(`This action only runs for pull requests: ${eventName}`)
-    }
-
-    const workflowInput: WorkflowInput = getWorkflowInput()
-    const prTitle: string = await exports.getPrTitle()
-
+export function validateTitle(prTitle: string, workflowInput: WorkflowInput): boolean {
     // The conditions are checked in the following order:
     // 1. Check if the validation will be skipped
     // 2. Valid conventional commit
@@ -56,16 +48,7 @@ export async function run() {
     // 3. Check character length
     // 4. Check type
     // 5. Check scope
-    info(`Checking PR title: "${prTitle}"`)
 
-    // check if validation should be skipped
-    let skipValidation: boolean = false
-    if (workflowInput.skipPrefix) {
-        skipValidation = prTitle.startsWith(workflowInput.skipPrefix)
-        if (skipValidation) {
-            warning("Titel validation was skipped")
-        }
-    }
 
     // TODO: take custom regex if defined
     // check if valid
@@ -73,7 +56,7 @@ export async function run() {
     let commitHeader: CommitHeader | null = parseHeader(prTitle)
     if (isValid && commitHeader != null) {
         info("Title is a valid conventional commit")
-    } else if (!skipValidation) {
+    } else {
         error("Title is not a valid conventional commit")
     }
 
@@ -119,8 +102,31 @@ export async function run() {
         (typeValid == undefined ? true : typeValid) &&
         (scopeValid == undefined ? true : scopeValid)
 
-    // if validation should be skipped then force check to pass
-    checksPassed ||= skipValidation
+    return checksPassed
+}
+
+export async function run() {
+    let eventName: string = github.context.eventName
+    if (eventName != "pull_request") {
+        setFailed(`This action only runs for pull requests: ${eventName}`)
+    }
+
+    const workflowInput: WorkflowInput = getWorkflowInput()
+    const prTitle: string = await exports.getPrTitle()
+
+
+    info(`Checking PR title: "${prTitle}"`)
+
+    // check if validation should be skipped
+    let skipValidation: boolean = false
+    if (workflowInput.skipPrefix) {
+        skipValidation = prTitle.startsWith(workflowInput.skipPrefix)
+        if (skipValidation) {
+            warning("Titel validation was skipped")
+        }
+    }
+
+    let checksPassed: boolean = skipValidation ? true : validateTitle(prTitle, workflowInput)
 
     setOutput("is-valid", checksPassed)
     if (!checksPassed && workflowInput.letFail) {
