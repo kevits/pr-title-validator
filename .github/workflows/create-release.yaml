@@ -1,0 +1,12 @@
+name: Create release
+on:
+  workflow_dispatch:
+    inputs:
+      description: 'Version tag'
+      required: false
+      type: striing
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TBA"
