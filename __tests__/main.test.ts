@@ -107,7 +107,7 @@ describe("Test tile validation run", () => {
     test("Validation should skip", async () => {
         const config: WorkflowInput = {
             letFail: true,
-            skipPrefix: "[WIP] "
+            skipPrefix: "[WIP] ",
         }
         const configModule = require("../src/config")
         jest.spyOn(configModule, "getWorkflowInput").mockReturnValueOnce(config)

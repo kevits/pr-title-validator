@@ -1,4 +1,4 @@
-import { getInput, warning } from "@actions/core"
+import { getInput, warning, InputOptions } from "@actions/core"
 
 export type WorkflowInput = {
     letFail: boolean
@@ -9,8 +9,8 @@ export type WorkflowInput = {
     regex?: RegExp
 }
 
-export function parseStringProperty(name: string): string | undefined {
-    return getInput(name) || undefined
+export function parseStringProperty(name: string, options?: InputOptions): string | undefined {
+    return getInput(name, options) || undefined
 }
 
 export function parseNumberProperty(name: string): number | undefined {
@@ -45,7 +45,7 @@ export function parseRegexProperty(name: string): RegExp | undefined {
 export function getWorkflowInput(): WorkflowInput {
     return {
         letFail: Boolean(getInput("let-fail")),
-        skipPrefix: parseStringProperty("skip-prefix"),
+        skipPrefix: parseStringProperty("skip-prefix", {trimWhitespace: false}),
         validTypes: parseStringArrayProperty("valid-types"),
         validScopes: parseStringArrayProperty("valid-scopes"),
         maxLength: parseNumberProperty("max-length"),
