@@ -1,4 +1,4 @@
-import { error, info, setFailed, setOutput, getInput } from "@actions/core"
+import { error, info, setFailed, setOutput, getInput, warning } from "@actions/core"
 import * as github from "@actions/github"
 import { CommitHeader, validateHeader, parseHeader } from "@kevits/conventional-commit"
 import { graphql, GraphQlQueryResponseData } from "@octokit/graphql"
@@ -41,24 +41,34 @@ export async function getPrTitle(): Promise<string> {
 }
 
 export async function run() {
+    let eventName: string = github.context.eventName
+    if (eventName != "pull_request") {
+        setFailed(`This action only runs for pull requests: ${eventName}`)
+    }
+
     const workflowInput: WorkflowInput = getWorkflowInput()
-
-    info(`eventName: ${github.context.eventName}`)
-    info(`Owner: ${github.context.repo.owner}`)
-    info(`Repo: ${github.context.repo.repo}`)
-    info(`GITHUB_REF: ${process.env.GITHUB_REF}`)
-    info(`GITHUB_EVENT_PATH: ${process.env.GITHUB_EVENT_PATH}`)
-
-    const prTitle: string = await getPrTitle()
+    const prTitle: string = await exports.getPrTitle()
 
     // The conditions are checked in the following order:
     // 1. Check if the validation will be skipped
     // 2. Valid conventional commit
+    //    - or take custom regex if present
     // 3. Check character length
     // 4. Check type
     // 5. Check scope
     info(`Checking PR title: "${prTitle}"`)
 
+    // check if validation should be skipped
+    let skipValidation: boolean = false
+    if (workflowInput.skipPrefix) {
+        skipValidation = prTitle.startsWith(workflowInput.skipPrefix)
+        if (skipValidation) {
+            warning("Titel validation was skipped")
+        }
+    }
+
+    // TODO: take custom regex if defined
+    // check if valid
     let isValid: boolean = validateHeader(prTitle)
     let commitHeader: CommitHeader | null = parseHeader(prTitle)
     if (isValid && commitHeader != null) {
@@ -67,6 +77,7 @@ export async function run() {
         error("Title is not a valid conventional commit")
     }
 
+    // check length
     let lengthValid: boolean | undefined = checkMaxLength(prTitle, workflowInput)
     if (workflowInput.maxLength == null) {
         info(`Skip: Defined length is null`)
@@ -76,6 +87,7 @@ export async function run() {
         error(`Length exceeds ${workflowInput.maxLength} characters`)
     }
 
+    // check type
     let typeValid: boolean | undefined
     if (workflowInput.validTypes && commitHeader) {
         typeValid = checkType(commitHeader, workflowInput)
@@ -88,6 +100,7 @@ export async function run() {
         info("Skip: No types are defined")
     }
 
+    // check scope
     let scopeValid: boolean | undefined
     if (workflowInput.validScopes && commitHeader) {
         scopeValid = checkScope(commitHeader, workflowInput)
@@ -106,8 +119,11 @@ export async function run() {
         (typeValid == undefined ? true : typeValid) &&
         (scopeValid == undefined ? true : scopeValid)
 
+    // if validation should be skipped then force check to pass
+    checksPassed ||= skipValidation
+
     setOutput("is-valid", checksPassed)
-    if (!checksPassed) {
+    if (!checksPassed && workflowInput.letFail) {
         setFailed(`The PR title is not valid`)
     }
 }
